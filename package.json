@@ -1,0 +1,21 @@
+{
+  "name": "gpa-checker",
+  "version": "1.0.0",
+  "description": "CGPA Checker Application - Full Stack",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n \"API,FRONTEND\" -c \"blue,yellow\" \"bun run dev:api\" \"bun run dev:frontend\"",
+    "dev:api": "cd api && bun run dev",
+    "dev:frontend": "cd frontend && bun run dev",
+    "install:all": "bun install && cd api && bun install && cd ../frontend && bun install",
+    "build": "cd frontend && bun run build",
+    "start:api": "cd api && bun start",
+    "start:frontend": "cd frontend && bun run preview"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}
