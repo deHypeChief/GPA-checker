@@ -39,17 +39,35 @@ const ImprovementSuggestions = ({ suggestions }) => {
         </div>
         <div className="card" style={{ textAlign: 'center' }}>
           <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#ffc107', margin: 0 }}>
-            {suggestions.stats?.averageCA?.toFixed(1) || '0.0'}
+            {suggestions.stats?.eGrades || 0}
           </p>
-          <p style={{ color: 'var(--gray)', marginTop: '4px' }}>Avg CA Score</p>
-        </div>
-        <div className="card" style={{ textAlign: 'center' }}>
-          <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#17a2b8', margin: 0 }}>
-            {suggestions.stats?.averageExam?.toFixed(1) || '0.0'}
-          </p>
-          <p style={{ color: 'var(--gray)', marginTop: '4px' }}>Avg Exam Score</p>
+          <p style={{ color: 'var(--gray)', marginTop: '4px' }}>E Grades Recorded</p>
         </div>
       </div>
+
+      {suggestions.predictiveInsights && suggestions.predictiveInsights.length > 0 && (
+        <div className="card">
+          <h3 style={{ color: 'var(--royal-blue)', marginBottom: '20px' }}>
+            Predictive Insights
+          </h3>
+          {suggestions.predictiveInsights.map((insight, index) => (
+            <div
+              key={index}
+              style={{
+                padding: '16px',
+                background: 'var(--light-gray)',
+                borderRadius: '8px',
+                marginBottom: '12px',
+                borderLeft: '4px solid var(--yellow)'
+              }}
+            >
+              <p style={{ color: 'var(--dark-gray)', margin: 0 }}>
+                {insight}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Suggestions */}
       {suggestions.suggestions && suggestions.suggestions.length > 0 && (
@@ -107,13 +125,7 @@ const ImprovementSuggestions = ({ suggestions }) => {
                     Total Score
                   </th>
                   <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid var(--gray)' }}>
-                    CA Score
-                  </th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid var(--gray)' }}>
-                    Exam Score
-                  </th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid var(--gray)' }}>
-                    Credit Hours
+                    Credit Units
                   </th>
                 </tr>
               </thead>
@@ -134,8 +146,6 @@ const ImprovementSuggestions = ({ suggestions }) => {
                       </span>
                     </td>
                     <td style={{ padding: '12px' }}>{course.totalScore}</td>
-                    <td style={{ padding: '12px' }}>{course.caScore}/40</td>
-                    <td style={{ padding: '12px' }}>{course.examScore}/60</td>
                     <td style={{ padding: '12px' }}>{course.creditHours}</td>
                   </tr>
                 ))}
@@ -148,7 +158,7 @@ const ImprovementSuggestions = ({ suggestions }) => {
       {/* Strong Areas */}
       {suggestions.strongAreas && suggestions.strongAreas.length > 0 && (
         <div className="card">
-          <h3 style={{ color: '#28a745', marginBottom: '20px' }}>
+          <h3 style={{ color: '#b8860b', marginBottom: '20px' }}>
             Strong Areas (Keep it up!)
           </h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
@@ -159,7 +169,7 @@ const ImprovementSuggestions = ({ suggestions }) => {
                   padding: '16px',
                   background: 'var(--light-gray)',
                   borderRadius: '8px',
-                  borderLeft: '4px solid #28a745'
+                  borderLeft: '4px solid #b8860b'
                 }}
               >
                 <p style={{ fontWeight: 'bold', margin: '0 0 4px 0' }}>
@@ -171,7 +181,7 @@ const ImprovementSuggestions = ({ suggestions }) => {
                 <span style={{
                   padding: '4px 8px',
                   borderRadius: '4px',
-                  background: '#28a745',
+                  background: '#b8860b',
                   color: 'var(--white)',
                   fontWeight: 'bold',
                   fontSize: '14px'

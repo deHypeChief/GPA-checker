@@ -13,18 +13,17 @@ const resultSchema = new mongoose.Schema({
   },
   caScore: {
     type: Number,
-    required: true,
     min: 0,
-    max: 40
+    max: 30
   },
   examScore: {
     type: Number,
-    required: true,
     min: 0,
-    max: 60
+    max: 70
   },
   totalScore: {
     type: Number,
+    required: true,
     min: 0,
     max: 100
   },
@@ -60,7 +59,7 @@ resultSchema.index({ user: 1, course: 1, session: 1, semester: 1 }, { unique: tr
 
 // Calculate total score, grade and grade point
 resultSchema.pre('validate', function(next) {
-  // Recalculate total score from CA and Exam scores if they exist
+  // Recalculate total score from CA and Exam scores if both are provided
   if (this.caScore !== undefined && this.examScore !== undefined) {
     this.totalScore = this.caScore + this.examScore;
   }

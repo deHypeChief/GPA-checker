@@ -134,7 +134,7 @@ const Dashboard = () => {
               </p>
               <p style={{ marginTop: '16px', opacity: 0.8 }}>
                 Total Courses: {cgpaData?.results || 0} | 
-                Total Credit Hours: {cgpaData?.overall?.totalCreditHours || 0}
+                Total Credit Units: {cgpaData?.overall?.totalCreditHours || 0}
               </p>
             </div>
 
@@ -167,7 +167,7 @@ const Dashboard = () => {
                     {data.cgpa.toFixed(2)}
                   </p>
                   <p style={{ fontSize: '12px', color: 'var(--gray)', marginTop: '4px' }}>
-                    {data.totalCreditHours} Credit Hours
+                    {data.totalCreditHours} Credit Units
                   </p>
                 </div>
               ))}

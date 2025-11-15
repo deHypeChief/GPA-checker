@@ -50,7 +50,7 @@ const CGPASimulator = ({ results, onSimulate }) => {
           Simulate CGPA
         </h2>
         <p style={{ color: 'var(--gray)', marginBottom: '20px' }}>
-          Enter projected CA and Exam scores to see how they would affect your CGPA.
+          Enter projected CA (max 30) and Exam (max 70) scores to see how they would affect your CGPA.
         </p>
 
         {error && <div className="error">{error}</div>}
@@ -84,7 +84,7 @@ const CGPASimulator = ({ results, onSimulate }) => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="creditHours">Credit Hours *</label>
+              <label htmlFor="creditHours">Credit Units *</label>
               <input
                 type="number"
                 id="creditHours"
@@ -98,7 +98,7 @@ const CGPASimulator = ({ results, onSimulate }) => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="caScore">Projected CA Score (0-40) *</label>
+              <label htmlFor="caScore">Projected CA Score (0-30) *</label>
               <input
                 type="number"
                 id="caScore"
@@ -107,14 +107,14 @@ const CGPASimulator = ({ results, onSimulate }) => {
                 onChange={handleChange}
                 required
                 min="0"
-                max="40"
+                max="30"
                 step="0.1"
-                placeholder="e.g., 35"
+                placeholder="e.g., 24"
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="examScore">Projected Exam Score (0-60) *</label>
+              <label htmlFor="examScore">Projected Exam Score (0-70) *</label>
               <input
                 type="number"
                 id="examScore"
@@ -123,9 +123,9 @@ const CGPASimulator = ({ results, onSimulate }) => {
                 onChange={handleChange}
                 required
                 min="0"
-                max="60"
+                max="70"
                 step="0.1"
-                placeholder="e.g., 45"
+                placeholder="e.g., 58"
               />
             </div>
           </div>
@@ -175,7 +175,7 @@ const CGPASimulator = ({ results, onSimulate }) => {
             </div>
             <div style={{
               padding: '20px',
-              background: simulation.change >= 0 ? 'rgba(40, 167, 69, 0.3)' : 'rgba(220, 53, 69, 0.3)',
+              background: simulation.change >= 0 ? 'rgba(184, 134, 11, 0.3)' : 'rgba(220, 53, 69, 0.3)',
               borderRadius: '8px',
               textAlign: 'center'
             }}>
@@ -194,9 +194,9 @@ const CGPASimulator = ({ results, onSimulate }) => {
           }}>
             <h4 style={{ marginBottom: '12px' }}>Course Details:</h4>
             <p><strong>Course:</strong> {simulation.course.code} - {simulation.course.name}</p>
-            <p><strong>Credit Hours:</strong> {simulation.course.creditHours}</p>
-            <p><strong>CA Score:</strong> {simulation.course.caScore}/40</p>
-            <p><strong>Exam Score:</strong> {simulation.course.examScore}/60</p>
+            <p><strong>Credit Units:</strong> {simulation.course.creditHours}</p>
+            <p><strong>CA Score:</strong> {simulation.course.caScore}/30</p>
+            <p><strong>Exam Score:</strong> {simulation.course.examScore}/70</p>
             <p><strong>Total Score:</strong> {simulation.course.totalScore}/100</p>
             <p><strong>Grade:</strong> {simulation.course.grade} ({simulation.course.gradePoint} points)</p>
           </div>
@@ -210,7 +210,12 @@ const CGPASimulator = ({ results, onSimulate }) => {
               border: '2px solid #FFD700'
             }}>
               <p style={{ margin: 0, fontWeight: '600' }}>
-                🎉 Great! This would improve your CGPA by {simulation.change.toFixed(2)} points!
+                {(() => {
+                  const current = simulation.current.cgpa || 0;
+                  const delta = simulation.simulated.cgpa - current;
+                  const percent = current > 0 ? (delta / current) * 100 : 0;
+                  return `🎉 Great! This would improve your performance by ${percent.toFixed(1)}%.`;
+                })()}
               </p>
             </div>
           )}

@@ -81,8 +81,8 @@ router.post('/simulate', authenticate, [
   body('courseCode').notEmpty().withMessage('Course code is required'),
   body('courseName').notEmpty().withMessage('Course name is required'),
   body('creditHours').isInt({ min: 1 }).withMessage('Credit hours must be at least 1'),
-  body('caScore').isFloat({ min: 0, max: 40 }).withMessage('CA score must be between 0 and 40'),
-  body('examScore').isFloat({ min: 0, max: 60 }).withMessage('Exam score must be between 0 and 60'),
+  body('caScore').isFloat({ min: 0, max: 30 }).withMessage('CA score must be between 0 and 30'),
+  body('examScore').isFloat({ min: 0, max: 70 }).withMessage('Exam score must be between 0 and 70'),
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -184,7 +184,14 @@ router.get('/suggestions', authenticate, async (req, res) => {
       return res.json({
         suggestions: [],
         weakAreas: [],
-        strongAreas: []
+        strongAreas: [],
+        stats: {
+          totalCourses: 0,
+          weakCourses: 0,
+          strongCourses: 0,
+          eGrades: 0
+        },
+        predictiveInsights: []
       });
     }
 
@@ -195,8 +202,6 @@ router.get('/suggestions', authenticate, async (req, res) => {
       courseName: r.course.name,
       grade: r.grade,
       totalScore: r.totalScore,
-      caScore: r.caScore,
-      examScore: r.examScore,
       creditHours: r.course.creditHours
     }));
 
@@ -242,25 +247,41 @@ router.get('/suggestions', authenticate, async (req, res) => {
       }
     });
 
-    // CA vs Exam performance
-    const avgCA = results.reduce((sum, r) => sum + r.caScore, 0) / results.length;
-    const avgExam = results.reduce((sum, r) => sum + r.examScore, 0) / results.length;
+    const predictiveInsights = [];
 
-    if (avgCA < 20) {
-      suggestions.push({
-        type: 'performance',
-        title: 'Improve Continuous Assessment',
-        message: `Your average CA score is ${avgCA.toFixed(1)}/40. Focus on assignments and class participation to improve your CA scores.`
-      });
+    const eCount = results.filter(r => r.grade === 'E').length;
+    if (eCount > 0) {
+      predictiveInsights.push('If you get two more E grades next semester, a first-class finish becomes unrealistic—lock down those weak spots now.');
     }
 
-    if (avgExam < 30) {
-      suggestions.push({
-        type: 'performance',
-        title: 'Enhance Exam Preparation',
-        message: `Your average exam score is ${avgExam.toFixed(1)}/60. Consider better exam preparation strategies and time management.`
-      });
+    const hundredLevelResults = results.filter(r => r.level === 100);
+    const twoHundredLevelResults = results.filter(r => r.level === 200);
+    if (hundredLevelResults.length > 0) {
+      const hundredCGPA = calculateCGPA(hundredLevelResults).cgpa;
+      const twoHundredCGPA = twoHundredLevelResults.length > 0 ? calculateCGPA(twoHundredLevelResults).cgpa : null;
+      predictiveInsights.push('80% of students see a large drop in grades after 100 level—keep your 200 level GPA at 3.5 or above to stay in first-class contention.');
+      if (twoHundredCGPA !== null && twoHundredCGPA < 3.5) {
+        predictiveInsights.push('Your 200 level CGPA is already below 3.5; double down on consistent study habits to remain competitive.');
+      } else if (hundredCGPA >= 4.5) {
+        predictiveInsights.push('You have a strong 100 level foundation—sustain at least a 3.5 CGPA in higher levels to protect your first-class trajectory.');
+      }
     }
+
+    const heavyCourses = results.filter(r => r.course.creditHours >= 3 && r.grade !== 'A');
+    if (heavyCourses.length > 0) {
+      predictiveInsights.push('Focus entirely on getting more A grades in 3-unit courses—they swing your CGPA faster than lighter classes.');
+    }
+
+    const defaultInsights = [
+      'If you get two more E grades next semester, a first-class finish becomes unrealistic—lock down those weak spots now.',
+      '80% of students see a large drop in grades after 100 level—keep your 200 level GPA at 3.5 or above to stay in first-class contention.',
+      'Focus entirely on getting more A grades in 3-unit courses—they swing your CGPA faster than lighter classes.'
+    ];
+    defaultInsights.forEach(message => {
+      if (!predictiveInsights.includes(message)) {
+        predictiveInsights.push(message);
+      }
+    });
 
     res.json({
       suggestions,
@@ -270,9 +291,9 @@ router.get('/suggestions', authenticate, async (req, res) => {
         totalCourses: results.length,
         weakCourses: weakAreas.length,
         strongCourses: strongAreas.length,
-        averageCA: parseFloat(avgCA.toFixed(2)),
-        averageExam: parseFloat(avgExam.toFixed(2))
-      }
+        eGrades: eCount
+      },
+      predictiveInsights
     });
   } catch (error) {
     console.error(error);

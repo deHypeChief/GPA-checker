@@ -165,7 +165,7 @@ const CGPACharts = ({ cgpaData, results }) => {
               <p style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--royal-blue)', margin: 0 }}>
                 {cgpaData?.overall?.totalCreditHours || 0}
               </p>
-              <p style={{ color: 'var(--gray)', marginTop: '4px' }}>Credit Hours</p>
+              <p style={{ color: 'var(--gray)', marginTop: '4px' }}>Credit Units</p>
             </div>
           </div>
         </div>

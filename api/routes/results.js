@@ -28,8 +28,9 @@ router.post('/', authenticate, [
   body('level').isInt({ min: 100 }).withMessage('Level must be at least 100'),
   body('semester').isIn(['First', 'Second']).withMessage('Semester must be First or Second'),
   body('session').notEmpty().withMessage('Session is required'),
-  body('caScore').isFloat({ min: 0, max: 40 }).withMessage('CA score must be between 0 and 40'),
-  body('examScore').isFloat({ min: 0, max: 60 }).withMessage('Exam score must be between 0 and 60'),
+  body('totalScore').isFloat({ min: 0, max: 100 }).withMessage('Total score must be between 0 and 100'),
+  body('caScore').optional().isFloat({ min: 0, max: 30 }).withMessage('CA score must be between 0 and 30'),
+  body('examScore').optional().isFloat({ min: 0, max: 70 }).withMessage('Exam score must be between 0 and 70'),
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -37,7 +38,17 @@ router.post('/', authenticate, [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { courseCode, courseName, creditHours, level, semester, session, caScore, examScore } = req.body;
+    const {
+      courseCode,
+      courseName,
+      creditHours,
+      level,
+      semester,
+      session,
+      totalScore,
+      caScore,
+      examScore
+    } = req.body;
 
     // Find or create course
     let course = await Course.findOne({ code: courseCode, session, level });
@@ -62,9 +73,6 @@ router.post('/', authenticate, [
     });
     
     if (result) {
-      // Update existing result (totalScore, grade, gradePoint will be calculated in pre-validate hook)
-      result.caScore = caScore;
-      result.examScore = examScore;
       result.level = level;
     } else {
       // Create new result (totalScore, grade, gradePoint will be calculated in pre-validate hook)
@@ -72,13 +80,19 @@ router.post('/', authenticate, [
       result = new Result({
         user: req.user._id,
         course: course._id,
-        caScore,
-        examScore,
         level,
         semester,
         session
       });
     }
+
+    if (caScore !== undefined) {
+      result.caScore = Number(caScore);
+    }
+    if (examScore !== undefined) {
+      result.examScore = Number(examScore);
+    }
+    result.totalScore = Number(totalScore);
 
     await result.save();
     await result.populate('course');
@@ -95,8 +109,9 @@ router.post('/', authenticate, [
 
 // Update a result
 router.put('/:id', authenticate, [
-  body('caScore').optional().isFloat({ min: 0, max: 40 }),
-  body('examScore').optional().isFloat({ min: 0, max: 60 }),
+  body('totalScore').optional().isFloat({ min: 0, max: 100 }),
+  body('caScore').optional().isFloat({ min: 0, max: 30 }),
+  body('examScore').optional().isFloat({ min: 0, max: 70 }),
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -111,6 +126,7 @@ router.put('/:id', authenticate, [
 
     if (req.body.caScore !== undefined) result.caScore = req.body.caScore;
     if (req.body.examScore !== undefined) result.examScore = req.body.examScore;
+    if (req.body.totalScore !== undefined) result.totalScore = req.body.totalScore;
     // totalScore, grade, and gradePoint will be automatically calculated in pre-validate hook
 
     await result.save();

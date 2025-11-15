@@ -10,8 +10,7 @@ const ResultsUpload = ({ results, onResultAdded, onResultDeleted }) => {
     level: '',
     semester: 'First',
     session: '',
-    caScore: '',
-    examScore: '',
+    totalScore: '',
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -37,8 +36,7 @@ const ResultsUpload = ({ results, onResultAdded, onResultDeleted }) => {
         ...formData,
         creditHours: parseInt(formData.creditHours),
         level: parseInt(formData.level),
-        caScore: parseFloat(formData.caScore),
-        examScore: parseFloat(formData.examScore),
+        totalScore: parseFloat(formData.totalScore),
       });
       setSuccess('Result added successfully!');
       setFormData({
@@ -48,8 +46,7 @@ const ResultsUpload = ({ results, onResultAdded, onResultDeleted }) => {
         level: '',
         semester: 'First',
         session: '',
-        caScore: '',
-        examScore: '',
+        totalScore: '',
       });
       onResultAdded();
     } catch (error) {
@@ -111,7 +108,7 @@ const ResultsUpload = ({ results, onResultAdded, onResultDeleted }) => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="creditHours">Credit Hours *</label>
+              <label htmlFor="creditHours">Credit Units *</label>
               <input
                 type="number"
                 id="creditHours"
@@ -166,34 +163,18 @@ const ResultsUpload = ({ results, onResultAdded, onResultDeleted }) => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="caScore">CA Score (0-40) *</label>
+              <label htmlFor="totalScore">Total Score (0-100) *</label>
               <input
                 type="number"
-                id="caScore"
-                name="caScore"
-                value={formData.caScore}
+                id="totalScore"
+                name="totalScore"
+                value={formData.totalScore}
                 onChange={handleChange}
                 required
                 min="0"
-                max="40"
+                max="100"
                 step="0.1"
-                placeholder="e.g., 35"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="examScore">Exam Score (0-60) *</label>
-              <input
-                type="number"
-                id="examScore"
-                name="examScore"
-                value={formData.examScore}
-                onChange={handleChange}
-                required
-                min="0"
-                max="60"
-                step="0.1"
-                placeholder="e.g., 45"
+                placeholder="e.g., 82"
               />
             </div>
           </div>
@@ -229,16 +210,10 @@ const ResultsUpload = ({ results, onResultAdded, onResultDeleted }) => {
                     Course Name
                   </th>
                   <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid var(--gray)' }}>
-                    Credit Hours
+                    Credit Units
                   </th>
                   <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid var(--gray)' }}>
-                    CA
-                  </th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid var(--gray)' }}>
-                    Exam
-                  </th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid var(--gray)' }}>
-                    Total
+                    Total Score (/100)
                   </th>
                   <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid var(--gray)' }}>
                     Grade
@@ -254,9 +229,7 @@ const ResultsUpload = ({ results, onResultAdded, onResultDeleted }) => {
                     <td style={{ padding: '12px' }}>{result.course?.code}</td>
                     <td style={{ padding: '12px' }}>{result.course?.name}</td>
                     <td style={{ padding: '12px' }}>{result.course?.creditHours}</td>
-                    <td style={{ padding: '12px' }}>{result.caScore}</td>
-                    <td style={{ padding: '12px' }}>{result.examScore}</td>
-                    <td style={{ padding: '12px' }}>{result.totalScore}</td>
+                    <td style={{ padding: '12px' }}>{result.totalScore}/100</td>
                     <td style={{ padding: '12px' }}>
                       <span style={{
                         padding: '4px 8px',

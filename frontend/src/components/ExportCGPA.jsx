@@ -38,6 +38,10 @@ const ExportCGPA = ({ cgpaData, user, results }) => {
     F: results.filter(r => r.grade === 'F').length,
   };
 
+  const currentLevel = results.length > 0
+    ? Math.max(...results.map(r => r.level || r.course?.level || 0))
+    : null;
+
   return (
     <div>
       <div className="card">
@@ -146,7 +150,7 @@ const ExportCGPA = ({ cgpaData, user, results }) => {
               {cgpaData?.overall?.totalCreditHours || 0}
             </p>
             <p style={{ fontSize: '14px', opacity: 0.9, margin: 0 }}>
-              Credit Hours
+              Credit Units
             </p>
           </div>
           <div style={{
@@ -156,10 +160,10 @@ const ExportCGPA = ({ cgpaData, user, results }) => {
             textAlign: 'center'
           }}>
             <p style={{ fontSize: '32px', margin: '0 0 8px 0', fontWeight: 'bold' }}>
-              {gradeCounts.A}
+              {currentLevel || 'N/A'}
             </p>
             <p style={{ fontSize: '14px', opacity: 0.9, margin: 0 }}>
-              A Grades
+              Current Level
             </p>
           </div>
         </div>
