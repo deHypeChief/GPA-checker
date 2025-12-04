@@ -2,6 +2,25 @@ import { useState } from 'react';
 import { resultsAPI } from '../services/api';
 import '../App.css';
 
+const COURSES = [
+  { code: 'COS 101', name: 'INTRODUCTION TO COMPUTER SCIENCE', credits: 3 },
+  { code: 'MTH 121', name: 'ELEMENTARY MATHEMATICS', credits: 3 },
+  { code: 'PHY 115', name: 'GENERAL PHYSICS FOR PHYSICAL SCIENCE I', credits: 3 },
+  { code: 'GSP 111', name: 'USE OF LIBRARY & STUDY SKILLS', credits: 2 },
+  { code: 'GSP 101', name: 'USE OF ENGLISH I', credits: 2 },
+  { code: 'MTH 111', name: 'ELEMENTARY MATHEMATICS I', credits: 3 },
+  { code: 'PHY 121', name: 'FUNDAMENTALS OF PHYSICS I', credits: 3 },
+  { code: 'COS 141', name: 'COMPUTER HARDWARE', credits: 3 },
+  { code: 'MTH 122', name: 'ELEMENTARY MATHEMATICS III', credits: 3 },
+  { code: 'PHY 116', name: 'GENERAL PHYSICS FOR PHYSICAL SCIENCES II', credits: 2 },
+  { code: 'PHY 118', name: 'GENERAL PHYSICS FOR PHYSICAL SCIENCE III', credits: 2 },
+  { code: 'STA 132', name: 'INFERENCEII', credits: 2 },
+  { code: 'STAT172', name: 'STATISTICAL COMPUTING', credits: 2 },
+  { code: 'GSP 102', name: 'USE OF ENGLISH II', credits: 2 },
+  { code: 'COS 102', name: 'INTRODUCTION TO PROBLEM SOLVING', credits: 3 },
+  { code: 'COS 124', name: 'INTRODUCTION TO DATABASE SYSTEM', credits: 3 },
+];
+
 const ResultsUpload = ({ results, onResultAdded, onResultDeleted }) => {
   const [formData, setFormData] = useState({
     courseCode: '',
@@ -21,6 +40,27 @@ const ResultsUpload = ({ results, onResultAdded, onResultDeleted }) => {
       ...formData,
       [e.target.name]: e.target.value,
     });
+    setError('');
+    setSuccess('');
+  };
+
+  const handleCourseSelect = (e) => {
+    const selectedCourse = COURSES.find(course => course.code === e.target.value);
+    if (selectedCourse) {
+      setFormData({
+        ...formData,
+        courseCode: selectedCourse.code,
+        courseName: selectedCourse.name,
+        creditHours: selectedCourse.credits.toString(),
+      });
+    } else {
+      setFormData({
+        ...formData,
+        courseCode: '',
+        courseName: '',
+        creditHours: '',
+      });
+    }
     setError('');
     setSuccess('');
   };
@@ -82,29 +122,21 @@ const ResultsUpload = ({ results, onResultAdded, onResultDeleted }) => {
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
             <div className="form-group">
-              <label htmlFor="courseCode">Course Code *</label>
-              <input
-                type="text"
-                id="courseCode"
-                name="courseCode"
+              <label htmlFor="courseSelect">Select Course *</label>
+              <select
+                id="courseSelect"
+                name="courseSelect"
                 value={formData.courseCode}
-                onChange={handleChange}
+                onChange={handleCourseSelect}
                 required
-                placeholder="e.g., CSC 101"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="courseName">Course Name *</label>
-              <input
-                type="text"
-                id="courseName"
-                name="courseName"
-                value={formData.courseName}
-                onChange={handleChange}
-                required
-                placeholder="e.g., Introduction to Computer Science"
-              />
+              >
+                <option value="">-- Select a course --</option>
+                {COURSES.map(course => (
+                  <option key={course.code} value={course.code}>
+                    {course.code} - {course.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="form-group">
@@ -118,6 +150,7 @@ const ResultsUpload = ({ results, onResultAdded, onResultDeleted }) => {
                 required
                 min="1"
                 placeholder="e.g., 3"
+                readOnly
               />
             </div>
 
